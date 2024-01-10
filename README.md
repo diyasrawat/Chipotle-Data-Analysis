@@ -362,6 +362,117 @@ carnitas salad
 | veggie salad bowl | 18.0 | 182.50 |
 | veggie soft tacos | 8.0 | 73.96 |
 
+## Data Cleaning and Analysis Summary:
+
+### 1. Handling Duplicates
+
+```python
+data.drop_duplicates(inplace=True)
+```
+The dataset initially had 59 duplicated entries. After removal, a clean dataset with no duplicate records was obtained.
+
+### 2. Quantity and Item Price Examination
+```
+data['quantity'].value_counts()
+```
+Quantity had reasonable values, and no anomalies were observed. Item prices were within a reasonable range, and no inconsistencies were detected.
+
+### 3. Choice Description Analysis
+```
+data['choice_description'].value_counts()
+```
+The 'Choice Description' column revealed numerous variations for similar items. Multiple descriptions exist for a single item.
+
+### 4. Special Characters Handling
+```
+data['item_name'] = data['item_name'].str.replace('[^A-Za-z0-9 ]', '', regex=True)
+data['choice_description'] = data['choice_description'].str.replace('[^A-Za-z0-9 ]', '', regex=True)
+```
+Special characters in 'Item Name' and 'Choice Description' columns were identified and removed for consistency.
+
+### 5. Standardizing Item Names
+```
+data['item_name'] = data['item_name'].str.replace('[^A-Za-z0-9 ]', '', regex=True)
+data['item_name'] = data['item_name'].str.lower()
+```
+Item names were standardized by removing special characters and converting to lowercase.
+
+### 6. Cross-Referencing Order ID
+```
+data.groupby('order_id').size().reset_index(name='count')
+```
+Order IDs were cross-referenced for integrity, revealing a count of orders for each ID.
+
+### 7. Quantity and Item Price Relationship
+```
+data.groupby('item_name')['quantity', 'item_price'].sum().reset_index()
+```
+The relationship between Quantity and Item Price was examined for each item.
+
+### 8. Average Price per Unit Calculation
+```
+average_price_per_unit = data.groupby('item_name')['item_price'].mean()
+```
+Average price per unit (item) was calculated to identify discrepancies.
+
+### 9. Encoding Categorical Columns
+```
+data_encoded = pd.get_dummies(data, columns=['item_name'], prefix='item')
+```
+Categorical columns, such as 'Item Name', were encoded for analysis.
+
+### 10. Top 5 Items by Quantity
+```
+data.groupby('item_name')['quantity'].sum().sort_values(ascending=False).head(5)
+```
+The top 5 items by quantity were identified.
+
+### 11. Top 3 Choice Descriptions
+```
+data.groupby('choice_description')['quantity'].sum().sort_values(ascending=False).head(3)
+```
+The top 3 choice descriptions were identified based on the total quantity.
+
+### 12. Total Order Count
+```
+data['order_id'].value_counts().sum()
+```
+The total order count in the dataset was found to be 4563.
+
+### 13. Total Revenue Calculation
+```
+data['revenue'] = data['item_price'] * data['quantity']
+total_revenue = data['revenue'].sum()
+```
+A new 'revenue' column was created by multiplying item price and quantity. The total revenue was calculated.
+
+### 14. Average Revenue per Order
+```
+average_revenue_per_order = data['revenue'].groupby(data['order_id']).mean()
+```
+Average revenue amount per order was calculated.
+
+### 15. Unique Items Count and List
+```
+print(data['item_name'].nunique())
+print(data['item_name'].unique())
+```
+The number of different items sold was found to be 50, and the unique names were listed.
+
+### 16. Total Cost and Quantity of Each Item
+```
+data.groupby('item_name')['quantity', 'item_price'].sum()
+```
+Total cost and quantity for each unique item were calculated and presented.
+
+
+## Conclusion:
+
+The analysis and cleaning procedures have resulted in a comprehensive understanding of the dataset. Duplicates were successfully removed, and columns were standardized for consistency. The examination of quantities, item prices, and choice descriptions provided insights into the dataset's characteristics.
+
+The encoding of categorical columns allows for a more in-depth analysis, and the identification of top items by quantity and revenue sheds light on popular products. The total order count and revenue metrics provide an overview of the overall performance.
+
+Going forward, these clean and processed data can be used for more advanced analytics, such as trend analysis, forecasting, or customer segmentation. The insights gained from this dataset can be valuable for strategic decision-making within the business.
 
 
 
